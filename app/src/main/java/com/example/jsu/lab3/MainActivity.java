@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -16,8 +17,11 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     String word;
-    String mixedWord;
     String shuffledWord = "";
+    String correctWord = "";
+    int count = 0;
+    int inGuess = 0;
+    int corrGuess = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> secretWords = new ArrayList(Arrays.asList("APPLE", "BANANA", "CHERRY"));
         Random random = new Random();
-        int rand = random.nextInt((secretWords.size() - 1) + 1) - 1;
+        int rand = random.nextInt((secretWords.size()));
         word = secretWords.get(rand);
         ArrayList<String> splitWord = new ArrayList(Arrays.asList(word.split("")));
         Collections.shuffle(splitWord);
@@ -45,27 +49,31 @@ public class MainActivity extends AppCompatActivity {
 
         TextView scrambledWord = (TextView) findViewById(R.id.scrambledWord);
         scrambledWord.setText(shuffledWord);
-        mixedWord = shuffledWord;
     }
 
     public void guessButtonClicked(View v) {
-        int inGuess = 0;
-        int corrGuess = 0;
         TextView incorrectGuesses = (TextView) findViewById(R.id.incorrectGuesses);
         TextView correctLetter = (TextView) findViewById(R.id.correctLetters);
-        EditText userinput = (EditText) findViewById(R.id.userInput);
+        EditText enteredText = (EditText) findViewById(R.id.userInput);
+        Button button = (Button) findViewById(R.id.button);
+        String userinput = enteredText.getText().toString().toUpperCase();
 
-        if(userinput.equals(mixedWord.charAt(corrGuess))) {
+        if(userinput.equals(Character.toString(word.charAt(corrGuess))) && count < word.length()) {
+            correctWord += Character.toString(word.charAt(corrGuess));
+            correctLetter.setText(correctWord);
+            enteredText.setText("");
             corrGuess++;
-            correctLetter.setText(shuffledWord.charAt(corrGuess));
-            userinput.setText("");
         }
-        else if(!userinput.equals(mixedWord.charAt(corrGuess))) {
+        else if (!userinput.equals(Character.toString(word.charAt(corrGuess)))) {
             inGuess++;
-            incorrectGuesses.setText(inGuess);
-            userinput.setText("");
+            incorrectGuesses.setText("Incorrect Guess : " + inGuess);
+            enteredText.setText("");
         }
         else {}
+
+        if(word.length() == corrGuess) {
+            button.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
